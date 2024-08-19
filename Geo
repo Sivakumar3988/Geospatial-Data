@@ -1,0 +1,72 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import streamlit as st
+
+# Streamlit App
+st.title("Geospatial Data Quality Metrics")
+
+# User input
+st.sidebar.header("Input Parameters")
+num_samples = st.sidebar.slider("Number of Samples", min_value=10, max_value=1000, value=100, step=10)
+noise_level = st.sidebar.slider("Noise Level", min_value=0.0, max_value=1.0, value=0.1, step=0.05)
+
+# Simulate geospatial data quality metrics
+np.random.seed(0)
+data_quality = np.random.rand(num_samples)  # Random values between 0 and 1
+
+# Simulate user satisfaction (assuming higher values indicate better satisfaction)
+user_satisfaction = data_quality * np.random.rand(num_samples) + np.random.normal(0, noise_level, num_samples)
+
+# Create DataFrame
+df = pd.DataFrame({
+    'DataQuality': data_quality,
+    'UserSatisfaction': user_satisfaction
+})
+
+# Metric Design
+df['DataQualityScore'] = df['DataQuality'] * 100  # Scale to 0-100
+df['SatisfactionScore'] = (df['UserSatisfaction'] - df['UserSatisfaction'].min()) / \
+                          (df['UserSatisfaction'].max() - df['UserSatisfaction'].min()) * 100
+
+# Show basic statistics
+st.header("Basic Statistics")
+st.write(f"**Mean Data Quality Score:** {df['DataQualityScore'].mean():.2f}")
+st.write(f"**Standard Deviation of Data Quality Score:** {df['DataQualityScore'].std():.2f}")
+st.write(f"**Mean Satisfaction Score:** {df['SatisfactionScore'].mean():.2f}")
+st.write(f"**Standard Deviation of Satisfaction Score:** {df['SatisfactionScore'].std():.2f}")
+
+# Plotting Metrics
+st.header("Distribution of Metrics")
+
+# Plot Data Quality Score Histogram
+fig1, ax1 = plt.subplots()
+ax1.hist(df['DataQualityScore'], bins=20, color='skyblue', edgecolor='black')
+ax1.set_title('Histogram of Data Quality Scores')
+ax1.set_xlabel('Data Quality Score')
+ax1.set_ylabel('Frequency')
+st.pyplot(fig1)
+
+# Plot Satisfaction Score Histogram
+fig2, ax2 = plt.subplots()
+ax2.hist(df['SatisfactionScore'], bins=20, color='lightgreen', edgecolor='black')
+ax2.set_title('Histogram of Satisfaction Scores')
+ax2.set_xlabel('Satisfaction Score')
+ax2.set_ylabel('Frequency')
+st.pyplot(fig2)
+
+# Scatter plot to visualize relationship between data quality and user satisfaction
+st.header("Relationship Between Data Quality and User Satisfaction")
+fig3, ax3 = plt.subplots()
+ax3.scatter(df['DataQualityScore'], df['SatisfactionScore'], alpha=0.7, c='blue', edgecolors='k')
+ax3.set_title('Data Quality Score vs Satisfaction Score')
+ax3.set_xlabel('Data Quality Score')
+ax3.set_ylabel('Satisfaction Score')
+ax3.grid(True)
+st.pyplot(fig3)
+
+# Insights & Recommendations
+st.header("Insights & Recommendations")
+st.write("1. The distribution of Data Quality Scores and Satisfaction Scores helps in understanding their spread and central tendency.")
+st.write("2. The scatter plot shows the relationship between data quality and user satisfaction.")
+st.write("3. Improving data quality metrics can be expected to enhance user satisfaction based on these observations.")
