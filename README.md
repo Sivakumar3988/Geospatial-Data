@@ -35,7 +35,11 @@ User Input: Allows users to adjust the number of samples and noise levels to see
 **Requirements**
 
 Python 3.6 or higher
-numpy
+
+NumPy
+
 pandas
+
 matplotlib
+
 streamlit
